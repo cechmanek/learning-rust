@@ -4,12 +4,6 @@ fn another_function(value: i32) // must declare parameter type in function decla
     println!("The value passd in is {}.", value);
 }
 
-
-fn return_five() -> i32 // specify the return type of this function 
-{
-    5 // the final line in the function is implicityly returned, but it can't have a semi-colon
-}
-
 fn main()
 {
     println!("Hello, world!");
@@ -18,4 +12,10 @@ fn main()
     let five = return_five();
 
     another_function(five);
+}
+
+// functions can be defined above or below main()
+fn return_five() -> i32 // specify the return type of this function 
+{
+    5 // the final line in the function is implicityly returned, but it can't have a semi-colon
 }
