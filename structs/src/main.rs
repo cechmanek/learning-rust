@@ -26,7 +26,19 @@ struct Color(u8, u8, u8);
 struct Point(f64, f64, f64);
 
 #[derive(Debug)]
-struct Rectangle {width: u32, height: u32}
+struct Rectangle {
+                    width: u32,
+                    height: u32,
+                 }
+
+
+// attaching methods to structs is does via an implementation block (impl)
+impl Rectangle {
+                fn area(&self) -> u32 // can use self or &self it seems?
+                {
+                    return self.width * self.height;
+                }
+}    
 
 fn main()
 {
@@ -74,4 +86,7 @@ fn main()
     // to print structs you have to use the #[derive(Debug)] annotation
     let my_rectangle = Rectangle{width: 12, height: 4};
     println!("the values in our rectagle are: {:?}", my_rectangle); // works
+    
+    // calling methods of structs. No need for deference pointer operator
+    println!("the area of my rectangle is {}", my_rectangle.area());
 }
