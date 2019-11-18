@@ -32,7 +32,7 @@ struct Rectangle {
                  }
 
 
-// attaching methods to structs is does via an implementation block (impl)
+// attaching methods to structs is done via an implementation block (impl)
 impl Rectangle {
                 fn area(&self) -> u32 // can use self or &self it seems?
                 {
