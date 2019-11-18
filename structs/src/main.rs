@@ -34,10 +34,16 @@ struct Rectangle {
 
 // attaching methods to structs is done via an implementation block (impl)
 impl Rectangle {
-                fn area(&self) -> u32 // can use self or &self it seems?
-                {
-                    return self.width * self.height;
-                }
+    fn area(&self) -> u32 // can use self or &self it seems?
+    {
+        return self.width * self.height;
+    }
+
+    // you can attach multiple methods in a single implementation block
+    fn can_hold(&self, other: &Rectangle) -> bool
+    {
+        return self.height > other.height && self.width > other.width;
+    }
 }    
 
 fn main()
@@ -89,4 +95,10 @@ fn main()
     
     // calling methods of structs. No need for deference pointer operator
     println!("the area of my rectangle is {}", my_rectangle.area());
+
+    // passing other structs to a struct's methods
+    let rect1 = Rectangle{height : 20, width : 30};
+    let rect2 = Rectangle{height : 10, width : 25};
+    println!("can rect1 hold rect2? {}", rect1.can_hold(&rect2));
+    println!("can rect2 hold rect1? {}", rect2.can_hold(&rect1));
 }
