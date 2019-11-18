@@ -44,6 +44,12 @@ impl Rectangle {
     {
         return self.height > other.height && self.width > other.width;
     }
+
+    // associated functions don't act on an instance of a struct, similar to static c++ methods
+    fn square(size: u32) -> Rectangle // they don't act on an instance, so don't need 'self'
+    {
+        return Rectangle{height: size, width: size}
+    }
 }    
 
 fn main()
@@ -101,4 +107,9 @@ fn main()
     let rect2 = Rectangle{height : 10, width : 25};
     println!("can rect1 hold rect2? {}", rect1.can_hold(&rect2));
     println!("can rect2 hold rect1? {}", rect2.can_hold(&rect1));
+
+    // make a new Rectange via an associated function
+    let my_square = Rectangle::square(5);
+    println!("my new square has height {}, and area {}", my_square.height, my_square.area());
+
 }
