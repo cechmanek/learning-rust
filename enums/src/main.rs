@@ -21,7 +21,7 @@ enum Coin {
 }
 
 // this function takes immutable reference to coin
-fn print_value_in_cents(coin: &Coin) {
+fn value_in_cents(coin: &Coin) -> u8 {
     let value = match coin {
         Coin::Penny => 1,
         Coin::Nickel => 5,
@@ -29,20 +29,9 @@ fn print_value_in_cents(coin: &Coin) {
         Coin::Quarter => 25,
     };
     println!("value is {}", value);
-}
-
-// this function takes ownership of coin
-fn get_value_in_cents(coin: Coin) -> u8 {
-    let value = match coin {
-        Coin::Penny => 1,
-        Coin::Nickel => 5,
-        Coin::Dime => 10,
-        Coin::Quarter => 25, 
-        // all enum possibilities must exist. 
-        //comment out one line and compiler complains
-    };
     return value;
 }
+
 
 fn main() {
     let home = IpAddress::V4(127,0,0,1);
@@ -60,10 +49,7 @@ fn main() {
     // enums combined with 'match' keyword
     let my_coin = Coin::Nickel;
 
-    print_value_in_cents(&my_coin);
+    value_in_cents(&my_coin);
 
-    let value = get_value_in_cents(my_coin);
-
-    println!("getting value of my coin: {}", value);
 
 }
