@@ -1,33 +1,28 @@
-enum IpAddressKind {
-    V4,
-    V6,
+enum IpAddress {
+    V4(u8, u8, u8, u8),
+    V6(String),
 }
 
-struct IpAddress {
-    kind : IpAddressKind,
-    address : String,
+impl IpAddress {
+    fn route(&self) {
+        println!("Can define methods attached to enums the same as we do structs");
+    }
 }
 
-fn route(ip_kind: IpAddressKind) {
-
+fn route(ip_kind: &IpAddress) {
+    // empty function 
 }
 
 fn main() {
-
-    let my_ip = IpAddressKind::V4;
+    let home = IpAddress::V4(127,0,0,1);
+    
+    let loopback = IpAddress::V6(String::from("::1"));
 
     // both V4 and V6 have the same parent type so can be consumed by the same function
-    route(IpAddressKind::V6);
-    route(my_ip);
+    route(&home);
+    route(&loopback);
 
-    let home = IpAddress {
-        kind : IpAddressKind::V4,
-        address : String::from("127.0.0.1"),
-    };
-
-    let loopback = IpAddress {
-        kind : IpAddressKind::V6,
-        address : String::from("::1"),
-    };
-
+    // calling methods of enums the same as we do from structs
+    home.route();
+    loopback.route();
 }
