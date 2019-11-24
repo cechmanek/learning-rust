@@ -82,5 +82,19 @@ fn main() {
     println!("five is: {:?}", five);
     println!("six is: {:?}", six);
     println!("none is: {:?}", none);
+   
+    // match blocks must be exhaustive, but there is a catch-all '_'
+    let my_num :u8 = 5;
+
+    let the_same_num = match my_num {
+        0 => "zero",
+        1 => "one",
+        2 => "two",
+        4 => "four",
+        8 => "eight",
+        _ => "not 0, 1, 2, 4, or 8",
+    };
+
+    println!("my_num is {}, aka {}", my_num, the_same_num);
 
 }
