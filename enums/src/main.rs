@@ -92,7 +92,7 @@ fn main() {
         2 => "two",
         4 => "four",
         8 => "eight",
-        _ => "not 0, 1, 2, 4, or 8",
+        _ => "not 0, 1, 2, 4, or 8", // will match to all values not explicitly written above
     };
 
     println!("my_num is {}, aka {}", my_num, the_same_num);
