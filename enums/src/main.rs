@@ -43,6 +43,15 @@ fn value_in_cents(coin: &Coin) -> u8 {
     return value;
 }
 
+// we can use the optional<T> enum when we need optionally present values
+fn plus_one(x: Option<i32>) -> Option<i32> {
+    match x {
+        None => None, // return Option::None if that is what we were passed in
+        Some(i) => Some(i+1), // increment by 1 if we got a non-None. 'i' is local argument
+    }
+    // this function returns the result of match as it's the last value with no semi-colon
+}
+
 fn main() {
     let home = IpAddress::V4(127,0,0,1);
     
@@ -63,4 +72,15 @@ fn main() {
     let alabama_quarter = Coin::Quarter(UsState::Alabama);
     
     value_in_cents(&alabama_quarter);
+
+    //using Option<T> to handle None values
+
+    let five = Some(5);
+    let six = plus_one(five);
+    let none = plus_one(None);
+
+    println!("five is: {:?}", five);
+    println!("six is: {:?}", six);
+    println!("none is: {:?}", none);
+
 }
