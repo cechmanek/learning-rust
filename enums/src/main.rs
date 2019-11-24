@@ -97,4 +97,28 @@ fn main() {
 
     println!("my_num is {}, aka {}", my_num, the_same_num);
 
+    // sometimes a full match block is too verbose for our needs so we can use 'if let' syntax
+
+    let some_value = Some(3);
+
+    // the three blocks below are equivalent
+
+    // 'match' block
+    match some_value {
+        Some(3) => println!("some_value is 3!"),
+        _ => (), // empty code block. do nothing
+    }
+
+    // 'if let' block. Basically the same as regular if statement, but handles Option<T> types
+    if let some_value = 3 {
+        println!("some_value is 3!");
+    }
+
+    // 'if let else' block
+    if let some_value = 3 {
+        println!("some_value is 3!");
+    }
+    else {
+        // empty section. do nothing
+    }
 }
