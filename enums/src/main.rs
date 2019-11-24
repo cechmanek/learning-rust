@@ -13,11 +13,18 @@ fn route(ip_kind: &IpAddress) {
     // empty function 
 }
 
+#[derive(Debug)]
+enum UsState {
+    Alabama,
+    Alaska,
+    // skip the rest
+}
+
 enum Coin {
     Penny,
     Nickel,
     Dime,
-    Quarter,
+    Quarter(UsState), // add a type for specially minted quarters
 }
 
 // this function takes immutable reference to coin
@@ -26,12 +33,15 @@ fn value_in_cents(coin: &Coin) -> u8 {
         Coin::Penny => 1,
         Coin::Nickel => 5,
         Coin::Dime => 10,
-        Coin::Quarter => 25,
+        Coin::Quarter(state) => {
+            // inside the 'match' block we can access enum sub values
+           println!("We found a special quarter from state: {:?}", state); // need :? to print special enum value
+           25 // same as 'return 25;'
+        },
     };
     println!("value is {}", value);
     return value;
 }
-
 
 fn main() {
     let home = IpAddress::V4(127,0,0,1);
@@ -48,8 +58,9 @@ fn main() {
 
     // enums combined with 'match' keyword
     let my_coin = Coin::Nickel;
-
     value_in_cents(&my_coin);
 
-
+    let alabama_quarter = Coin::Quarter(UsState::Alabama);
+    
+    value_in_cents(&alabama_quarter);
 }
