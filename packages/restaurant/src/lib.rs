@@ -78,5 +78,12 @@ pub fn eat_at_diner() {
     hosting::add_to_waitlist(); // this function is now in scope
 
     //hosting::seat_at_table(); // this is in scope, but isn't made public, so still can't be called
-
 }
+
+
+/* Re-exporting names with 'pub use' syntax
+ on line 73 above we have 'use crate::front_of_house::hosting' which brings hosting into scope but
+ still doesn't make hosting available outside of this scope. For that we can combine 'pub' and 'use' 
+ */
+ pub use crate::back_of_house::Appetizer;
+ // now back_of_house::Appetizer is available outside this module
