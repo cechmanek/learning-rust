@@ -65,4 +65,58 @@ fn main() {
                    SpreadsheetCell::Float(10.12)
                   ];
 
+    ///////
+    // all things Strings !
+    ///////
+
+    // strings are similar to Vec<T>, they also have ::new() method and push_str() method
+    let mut new_string = String::new();
+    
+    let my_string = "here is "; // 'string literal' type
+    let mut my_string = my_string.to_string(); // 'String' type
+
+    my_string.push('a'); // can add just one character at a time. MUST BE SINGLE QUOTES! DUMB!!
+    my_string.push_str(" list of words"); // or a whole new string literal
+    
+    // strings are UTF-8 encoded so all the characters below are valid
+    let hello = String::from("السلام عليكم");
+    let hello = String::from("Dobrý den");
+    let hello = String::from("Hello");
+    let hello = String::from("שָׁלוֹם");
+    let hello = String::from("नमस्ते");
+    let hello = String::from("こんにちは");
+    let hello = String::from("안녕하세요");
+    let hello = String::from("你好");
+    let hello = String::from("Olá");
+    let hello = String::from("Здравствуйте");
+    let hello = String::from("Hola");
+
+    // can concatenate with '+' operator
+    let s1 = String::from("Hello, ");
+    let s2 = String::from("world!");
+    let s3 = s1 + &s2; // must be &s2, not s2. type(&s2) == str slice, type(s2) == String 
+
+    // can also use format!() function for complex string construction
+    let s1 = String::from("tic");
+    let s2 = String::from("tac");
+    let s3 = String::from("toe");
+    
+    let s4 = format!("{}-{}-{}", s1, s2, s3);
+
+    // because Rust Strings are UTF-8 encoded, under the hood not all characters are equal size
+    // this means indexing into Strings (letter = my_string[3]) may try to split between a character
+
+    let hello = "Здравствуйте"; // first char is capital Cyrillic letter Ze, not number 3
+    let s = &hello[0..4]; // this works as it happens to split between valid characters
+    //let s = &hello[0..1]; // this compiles, but crashes at run because it splits into a character 
+
+    // we can still iterate over strings fairely well
+    for c in hello.chars() {
+        println!("{}", c);
+    }
+    
+    // can get raw UTF-8 bytes too. note how this for loop prints twice as many values than .chars()
+    for b in hello.bytes() {
+        println!("{}", b);
+    }
 }
