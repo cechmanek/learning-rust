@@ -119,4 +119,70 @@ fn main() {
     for b in hello.bytes() {
         println!("{}", b);
     }
+
+    // Now let's take a look at hash maps
+    // the syntax is : my_hashmap : HashMap<key_type, value_type> = HashMap::new()
+    use std::collections::HashMap;
+    let my_hashmap : HashMap<char, u8> = HashMap::new();
+
+    // as is common in Rust, object sizes must be known at compile time so the following line:
+    // let my_hashmap :Hashmap<str, u8> = HashMap::new();
+    // won't compile as 'str' doesn't have a known/fixed size
+
+    // we can let Rust do type inference for keys and values if we manually insert hashmap pairs
+    let mut my_hashmap2 = HashMap::new();
+    my_hashmap2.insert(String::from("Blue"), (255,0,0)); // key:String, value:tuple(i32,i32,i32)
+    my_hashmap2.insert(String::from("Green"), (0,255,0));
+    my_hashmap2.insert(String::from("Red"), (0,0,255));
+    // these pairs are defined after my_hashmap2, but still known fully at compile time
+
+    // For types that implement the Copy trait, like i32, the values are copied into the hash map.
+    // For owned values like String, the values will be moved and the hash map will be the new owner
+    
+    let field_name = String::from("Favorite color");
+    let field_value = String::from("Blue");
+
+    let name2 = String::from("Second favorite");
+    let value2 = String::from("Green");
+
+    let mut map = HashMap::new();
+    map.insert(field_name, field_value);
+    map.insert(name2, value2);
+    // field_name and field_value are invalid now. Try using them to see the compiler error you get
+
+    // we can use for loops to iterate over hashmaps
+    for (key, value) in &map {
+        println!("{}, {}", key, value);
+    }
+
+    // checking if a hashmap has a key already is done via the '.entry()' method
+    let thing = map.entry(String::from("Favorite color"));
+    println!("{:?} ", thing);   
+    
+    let thing2 = map.entry(String::from("Third favorite"));
+    println!("{:?}", thing2);
+    // for some reason the above two actions must be separate. Defining thing, thing2, then printing 
+    // fails. Looks like they both borrow map, not just the specific key-value pair
+
+    // we can use the .or_insert() method which checks for a key and only inserts if no key is found
+    let mut scores = HashMap::new();
+    scores.insert(String::from("Blue"), 10);
+
+    scores.entry(String::from("Yellow")).or_insert(50); // {"Yellow":50} is inserted
+    scores.entry(String::from("Blue")).or_insert(50); // not inserted as key "Blue" exists
+
+    println!("{:?}", scores); // can print a full hashmap if we use non-standard formatting {:?}
+
+    // often we want to increment values in hashmaps
+    let text = "hello world wonderful world";
+
+    let mut map = HashMap::new();
+
+    for word in text.split_whitespace() {
+        let count = map.entry(word).or_insert(0); // .or_insert() returns a mutable reference
+        *count += 1; // must use dereference operator to update value in map through count reference
+    }
+
+    println!("{:?}", map);
+
 }
