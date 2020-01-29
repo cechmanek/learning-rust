@@ -45,7 +45,49 @@ fn main()
         },
     };
 
-    // got up to "Listing 9-5: Handling different kinds of errors in different ways" 
+    // we can use the unwrap() method on Result<T,E> as a shorthand for match blocks
+    // it automatically extracts the success or Error
+    //let my_file = File::open("hello.txt").unwrap(); // panics as 'hello.txt' doesn't exist
 
+    // we can customize error messages in panics by using the expect() method instead
+    let my_file = File::open("hello2.txt").expect("Failed to open hello2.txt");
+    // this is identical to .unwrap() except you can pass a custom message
+
+
+    // Propogating Errors
+    // you can return errors from functions so that parent code can better handle them
+    use std::io;
+    use std::io::Read;
+    
+    fn read_user_name_from_file() -> Result<String, io::Error>
+    {
+        let my_file = File::open("hello3.txt");
+
+        let mut my_file = match my_file {
+            Ok(file) => file,
+            Err(e) => return Err(e), // if we can't open the file for any reason return the error to parent code
+        };
+
+        let mut my_string = String::new();
+
+        //match my_file.read_to_string(&mut my_string) {
+        //   Ok(_) => Ok(my_string),
+        //   Err(e) => Err(e),
+        //},
+        
+        // this last match() block is infuriating!
+        // Notice the comma terminating the match block instead of a semicolon. Literally the smallest possible character change between ',' and ';' 
+        // that comma indicates that this whole function block returns either Ok(my_string), or Err(e), which correspond to Result<String, io::Error>
+        // Expecting people to notice ',' vs ';' instead of using the wonderful keyword 'return' is a disgraceful crime commited by the Rust core team!
+
+        // an more intelligent way to do this would be:
+        return match my_file.read_to_string(&mut my_string) {
+            Ok(_) => Ok(my_string),
+            Err(e) => Err(e),
+        };
+    }
+
+    // Rust has some fucked up bullshit shorthand that replaces match blocks that contain "Err(e) => return Err(e)" with a ? instead
+    // it's total garbage and should never be used, so I won't reproduce it here.
 
 }
