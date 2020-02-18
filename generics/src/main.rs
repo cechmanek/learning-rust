@@ -38,7 +38,7 @@ fn main() {
     
     // try calling point.distance_from_origin() on our structs. it won't compile for non f32 types
     //println!("my float_point.x() is: {}", integer_point.distance_from_origin()); won't work on i32
-    println!("my float_point.x() is: {}", float_point.distance_from_origin());
+    println!("my float_point.distance_from_origin() is: {}", float_point.distance_from_origin());
 }
 
 
@@ -113,4 +113,74 @@ impl <T,U> Point2<T,U> {
         let new_point = Point2 {x:self.x, y:other.y};
         return new_point;
     }
+}
+
+// TRAITS
+// traits are similar to abstract classes in c++, or interfaces in c#. They specify a set of methods
+// that a struct with the corresponding trait must implement
+
+// here's an example that text-filled structs, like articles and tweets may have
+
+pub trait Summary {
+    fn summarize(&self) -> String; // here we just declare the method signature, not implementation
+
+    fn get_author(&self) -> String { // here we define a default method, which can be over written
+        return String::from("justin cechmanek");
+    }
+}
+// this states that any struct with the Summary trait must implement and define the summarize method
+
+// now apply it to some structs
+pub struct NewsArticle {
+    pub headline: String,
+    pub location: String,
+    pub author: String,
+    pub content: String,
+}
+
+impl Summary for NewsArticle {
+    fn summarize(&self) -> String {
+        return format!("{}, by {} ({})", self.headline, self.author, self.location);
+    }
+}
+
+pub struct Tweet {
+    pub username: String,
+    pub content: String,
+    pub reply: bool,
+    pub retweet: bool,
+}
+
+impl Summary for Tweet {
+    fn summarize(&self) -> String {
+        return format!("{}: {}", self.username, self.content);
+    }
+}
+
+/// Combining traits with functions
+// we saw how to use generics to get better code reuse with functions, 
+// now we can do this with traits too 
+fn notify(item: impl Summary) { // now this function accepts any type that has the Summary trait
+    println!("Breaking news! {}", item.summarize()); 
+}
+
+// the above notify(..) function is actually syntactic sugar for what's call a 'trait bound'
+// this states that generic types that implement Summary trait are accepted
+fn full_notify<T: Summary>(item: T) {
+    println!("Breaking news! {}", item.summarize());
+}
+
+use std::fmt::Display; // import some random traits
+use std::fmt::Debug;
+
+// when there are many trait bounds things can get hard to read, so Rust has a 'where' keyword
+fn some_function<T: Display + Clone, U: Clone + Debug>(t: T, u: U) -> i32 {
+    return 1;
+}
+// this is equivalent to:
+fn some_other_function<T, U>(t: T, u: U) -> i32
+    where T: Display + Clone,
+          U: Clone + Debug
+{
+    return 1;
 }
