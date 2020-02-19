@@ -66,7 +66,7 @@ fn largest_char(list: &[char]) -> char {
 }
 
 // rather than have a dozen functions, one for each data type, lets use a generic data type T
-// note: this won't compile yet as we haven't guaranteed that all types we pass it will be orderable 
+// note: this won't compile yet as we haven't guaranteed that all types we pass it will be orderable
 /*
 fn largest<T>(list: &[T]) -> T {
     let mut largest = list[0];
@@ -184,3 +184,16 @@ fn some_other_function<T, U>(t: T, u: U) -> i32
 {
     return 1;
 }
+
+// redoing our generic largest<T>(list :&[T]) -> T function
+// now by specifying the needed traits on the input type T this will compile
+fn largest<T : PartialOrd + Copy>(list: &[T]) -> T {
+    let mut largest = list[0];
+    for &item in list.iter() {
+        if item > largest {
+            largest = item;
+        }
+    }
+    return largest;
+}
+
