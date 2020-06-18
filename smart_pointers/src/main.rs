@@ -41,6 +41,16 @@ impl Drop for CustomSmartPointer {
 }
 // if we didn't write custom drop() method the struct would still be cleaned up, just silently
 
+
+// above are the simplest types of smart pointers. We can also use reference counted pointers, Rc<>
+use std::rc::Rc;
+enum RcList {
+    RcNode(i32, Rc<RcList>),
+    RcNil, // RcNil instead of Nil, because Nil belongs to List enum above
+}
+use crate::RcList::{RcNode, RcNil};
+
+
 fn main() {
   let b = Box::new(5); // smart pointer that is allocated on the heap
   println!("b = {}", b);
@@ -65,4 +75,19 @@ fn main() {
   // we can call the std::mem::drop() function on a variable to clean it early
   drop(custom); // this works just fine
   println!("this will print after 'custom' is deleted");
+
+  // with reference counted smart pointers we can create graphs with nodes pointing to each other
+  let a = Rc::new(RcNode(5, Rc::new(RcNode(10, Rc::new(RcNil)))));
+  let b = RcNode(3, Rc::clone(&a)); // clone() creates a new ref counted pointer, doesn't copy data
+  let c = RcNode(4, Rc::clone(&a));
+  /* graph looks like:
+   b[3] -> a[5] -> [10] -> [RcNil]
+   c[4] ---^
+  */
+  
+  // to see how many ref counted pointers exist on an item call:
+  let num_references = Rc::strong_count(&a);
+  println!("there are {} references on the data pointed to by 'a'",num_references);
+  // the references to &a are : [a, b, c]. Don't forget 'a' points to '&a' so is a reference
+
 }
