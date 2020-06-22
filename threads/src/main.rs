@@ -8,6 +8,10 @@ use std::time::Duration;
 // libraries for messge passing between threads
 use std::sync::mpsc;
 
+// libraries for shared memory access via mutex
+use std::sync::{Arc,Mutex};
+// use std::thread  which is also needed, but already imported above
+
 fn main() {
   thread::spawn (|| {
     for i in 1..10 { // this thread will not finish as once the main thread ends this all stops
@@ -111,5 +115,27 @@ fn main() {
   for received in rx { // gets all transmissions from tx and tx1
     println!("got message: {}", received);
   }
+
+  //////////////////////////////////////////
+  // shared memory access via mutex
+
+  // we need Atomic reference counting (Arc), not standard ref counting (Rc) for thread safety
+  let counter = Arc::new(Mutex::new(0));
+  let mut handles = vec![];
+
+   for _ in 0..10 {
+     let counter = Arc::clone(&counter); // create local clone via variable shaddowing
+     let handle = thread::spawn( move || {
+       let mut num = counter.lock().unwrap();// lock mutex returns a result of Ok or Err, so unwrap
+       * num += 1; // need to dereference num
+     });
+     handles.push(handle); // add thread handle to our list of handles
+   }
+
+  for handle in handles {
+    handle.join().unwrap(); // force process to wait for all threads to finish
+  }
+
+  println!("number of threads is : {}", *counter.lock().unwrap());
 
 }
