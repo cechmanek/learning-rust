@@ -15,7 +15,7 @@ impl Post {
   }
 
   pub fn content(&self) ->&str {
-    return ""; // placeholder method for now
+    return self.state.as_ref().unwrap().content(self);
   }
 
   pub fn request_review(&mut self) {
@@ -32,8 +32,11 @@ impl Post {
 }
 
 trait State {
-  fn request_review(self: Box<Self>) -> Box<dyn State>;
-  fn approve(self: Box<Self>) -> Box<dyn State>;
+  fn request_review(self: Box<Self>) -> Box<dyn State>; // method must be overridden
+  fn approve(self: Box<Self>) -> Box<dyn State>; // method must be overridden
+  fn content<'a>(&self, post: &'a Post) -> &'a str { // default content() method
+    return "";
+  }
 }
 
 struct Draft {}
@@ -69,5 +72,9 @@ impl State for Published {
 
     fn approve(self: Box<Self>) -> Box<dyn State> {
         self
+    }
+
+    fn content<'a>(&self, post: &'a Post) -> &'a str {
+      return &post.content;
     }
 }
