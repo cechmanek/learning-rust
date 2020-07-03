@@ -60,3 +60,49 @@ extern "C" {
 pub extern "C" fn call_from_c() {
   println!("Just called this Rust function from C!");
 }
+
+
+// Rust allows for operator overloading, but only of specific operators defined in std::ops
+use std::ops::Add;
+
+struct Point {
+  x: i32,
+  y: i32,
+}
+
+impl Add for Point { // implement, aka overload, the + operator
+  type Output = Point; // what should be returned from point1 + point2
+
+    fn add(self, other: Point) -> Point { // must specify what type 'other' is
+      return Point {x: self.x + other.x,
+                    y: self.x + other.y};
+    }
+}
+
+// we can have different behaviour if we want to add different types and customize + operator
+struct Millimeters(u32);
+struct Meters(u32);
+
+impl Add<Meters> for Millimeters { // for when we want millimeter + Meter 
+  type Output = Millimeters;
+  fn add(self, other: Meters) -> Millimeters {
+    return Millimeters(self.0 + other.0 * 1000); // no formal params like x,y so use (), not {}
+  }
+}
+
+// need to also implement Meters + Millimeters, as these are not commutatative by default
+impl Add<Millimeters> for Meters {
+  type Output = Meters;
+  fn add(self, other: Millimeters) -> Meters {
+    return Meters(self.0 + other.0/1000); // no formal params like x,y so use (), not {}
+  }
+}
+
+// separate impl block for adding Millimeters to Millimeters
+impl Add<Millimeters> for Millimeters {
+  type Output = Millimeters;
+  fn add(self, other: Millimeters) -> Millimeters {
+    return Millimeters(self.0 + other.0); // no formal params like x,y so use (), not {}
+  }
+}
+
