@@ -1,6 +1,5 @@
 fn main() {
-  // example of unsafe rust super powers
-  // 1) dereferencing raw pointers  
+  // example of unsafe rust super powers: dereferencing raw pointers  
   let mut num = 5;
 
   // create raw pointer by casting regular Rust pointers to their raw types
@@ -20,6 +19,11 @@ fn main() {
     dangerous(); // can only be called inside an unsafe{} code block
   }
 
+  // using external code must be done inside an unsafe block
+  unsafe {
+    let positive_five = abs(-5); // call the "C" abs() function
+    println!("calling abs() from C works: abs(-5) ==> {}",positive_five);
+  }
 }
 
 // defining unsafe functions is identical to regular functions, except with the unsafe keyword
@@ -44,4 +48,15 @@ fn split_at_index(my_arr: &mut [i32], mid: usize) ->(&mut[i32], &mut[i32]) {
             );
     return a;
   }
+}
+
+// we can call code from other languages in Rust. this is always unsafe
+extern "C" {
+  fn abs(input: i32) -> i32;
+}
+
+// we can define Rust as callable from other languages
+#[no_mangle] // tell Rust compiler to not modify this function name
+pub extern "C" fn call_from_c() {
+  println!("Just called this Rust function from C!");
 }
