@@ -48,6 +48,13 @@ fn split_at_index(my_arr: &mut [i32], mid: usize) ->(&mut[i32], &mut[i32]) {
             );
     return a;
   }
+
+// examples of passing and returning function objects
+// we can all return_a_function() as:
+let my_function = return_a_function(); // returns the add_one() function 
+let six: i32 = my_function(5); // can now call my_function as a plain old function
+
+let my_function2: fn(i32)->i32 = return_a_function(); // use full signature as type anotation 
 }
 
 // we can call code from other languages in Rust. this is always unsafe
@@ -106,3 +113,26 @@ impl Add<Millimeters> for Millimeters {
   }
 }
 
+/*
+ Advanced functional tools
+*/
+
+// functions are first class in Rust, which means we can pass and return them from other functions
+
+fn add_one(x: i32) -> i32 { // just a plain old function
+  return x+1;
+}
+
+fn do_twice(f: fn(i32)->i32, x:i32) -> i32 { // arg named 'f', with its signature as its type
+  return f(x) + f(x);
+}
+
+fn return_a_function() -> fn(i32) -> i32 { // specify the full signature to return
+  return add_one;
+}
+// we can call do_twice() as:
+// let answer: i32 = do_twice(add_one, 5); // returns (5+1) + (5+1)
+
+// we can all return_a_function() as:
+// let my_function = return_a_function(); // 
+// let six: i32 = my_function(5); // can now call my_function as a plain old function
