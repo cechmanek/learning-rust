@@ -7,13 +7,21 @@ use std::net::TcpListener;
 use std::net::TcpStream;
 use std::fs;
 
+use web_server::ThreadPool; // our custom struct
+
 fn main() {
   let listener = TcpListener::bind("127.0.0.1:7878").unwrap(); // listen for requests at address
-  
+ 
+  let pool = ThreadPool::new(4); // our custom ThreadPool struct. max of 4 threads
+
   for stream in listener.incoming() {
     let stream = stream.unwrap();
 
-    handle_connection(stream);
+    //handle_connection(stream); // for single threaded version
+
+    pool.execute(|| {
+        handle_connection(stream);
+    });
   }
 }
 
@@ -38,3 +46,4 @@ fn handle_connection(mut stream: TcpStream) {
     stream.write(response.as_bytes()).unwrap();
     stream.flush().unwrap(); 
 }
+
