@@ -5,7 +5,7 @@ use std::sync::Mutex;
 
 pub struct ThreadPool {
   workers : Vec<Worker>,
-  sender: mpsc::Sender<Job>,
+  sender: mpsc::Sender<Message>,
 }
 
 impl ThreadPool {
@@ -36,19 +36,31 @@ impl ThreadPool {
       F: FnOnce() + Send + 'static, // FnOnce is one of three possible traits to use
     {
       let job = Box::new(f);
-      self.sender.send(job).unwrap();
+      self.sender.send(Message::NewJob(job)).unwrap();
     }
 
 }
 
 impl Drop for ThreadPool {
   fn drop(&mut self) {
+    println!("Sending terminate message to all workers.");
+
+    for _ in &self.workers { // send terminate N times, so N threads will receive one each
+      self.sender.send(Message::Terminate).unwrap();
+    }
+    println!("Shutting down all workers.");
+    
+    // need two loops because when we send terminate we don't know which thread will get it
+    // it may not be the same thread that we call thread.join() on, and join() is blocking,
+    // so we may be blocking on a thread that didn't receive a terminate yet
     for worker in &mut self.workers {
       println!("Shutting down worker {}", worker.id);
-      if let Some(thread) = worker.thread.take() { // take() takes Some() variant and leaves None()
-        thread.join().unwrap();
-      }
+      if let Some(thread) = worker.thread.take() {
+        thread.join().unwrap(); // we know all threads have received a terminate from previous loop
+      }   
     }
+  
+  
   }
 }
 
@@ -59,19 +71,31 @@ struct Worker {
 }
 
 impl Worker {
-  pub fn new(id: usize, receiver: Arc<Mutex<mpsc::Receiver<Job>>>) -> Worker {
+  pub fn new(id: usize, receiver: Arc<Mutex<mpsc::Receiver<Message>>>) -> Worker {
     let thread = thread::spawn(move || loop { // loop forever to listen for incomming tasks
-      let job = receiver.lock().unwrap().recv().unwrap(); // recv() blocks if no work present
+      let message = receiver.lock().unwrap().recv().unwrap(); // recv() blocks if no work present
 
       // by having recv() block this thread holds its place as next in line.
       // not problem that channel locked. it's only locked while no tasks are being sent across it
-      println!("Worker {} got a job; executing.", id);
-   
-      job(); // run the code passed to this thread
-    }); // spawn with empty code block. needed to keep alive
+      match message {
+        Message::NewJob(job) => {
+          println!("Worker {} got a job; executing.", id);
+          job(); // run the code passed to this thread
+        }
+        Message::Terminate => {
+          println!("Worker {} was told to terminate.", id);
+          break; // break infinite loop
+        }
+      }
+    });
     
     return Worker { id:id, thread:Some(thread) };
   }
 }
 
 type Job = Box<dyn FnOnce() + Send + 'static>;
+
+enum Message { // to indicate if thread should take a new job or exit their infinite loop
+  NewJob(Job),
+  Terminate,
+}

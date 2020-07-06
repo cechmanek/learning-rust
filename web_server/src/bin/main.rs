@@ -30,7 +30,7 @@ fn handle_connection(mut stream: TcpStream) {
 
   stream.read(&mut buffer).unwrap();
 
-  println!("Request: {}", String::from_utf8_lossy(&buffer[..])); // 'lossy' replaces unknown chars
+  //println!("Request: {}", String::from_utf8_lossy(&buffer[..])); // 'lossy' replaces unknown chars
 
   let get = b"GET / HTTP/1.1\r\n"; //'b' means interpret as bytes. GET request for '/' page
 
