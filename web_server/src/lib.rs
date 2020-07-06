@@ -35,6 +35,8 @@ impl ThreadPool {
     where
       F: FnOnce() + Send + 'static, // FnOnce is one of three possible traits to use
     {
+      let job = Box::new(f);
+      self.sender.send(job).unwrap();
     }
 
 }
@@ -47,12 +49,18 @@ struct Worker {
 
 impl Worker {
   pub fn new(id: usize, receiver: Arc<Mutex<mpsc::Receiver<Job>>>) -> Worker {
-    let thread = thread::spawn(|| {
-      receiver;
+    let thread = thread::spawn(move || loop { // loop forever to listen for incomming tasks
+      let job = receiver.lock().unwrap().recv().unwrap(); // recv() blocks if no work present
+
+      // by having recv() block this thread holds its place as next in line.
+      // not problem that channel locked. it's only locked while no tasks are being sent across it
+      println!("Worker {} got a job; executing.", id);
+   
+      job(); // run the code passed to this thread
     }); // spawn with empty code block. needed to keep alive
     
     return Worker { id, thread };
   }
 }
 
-struct Job;
+type Job = Box<dyn FnOnce() + Send + 'static>;
