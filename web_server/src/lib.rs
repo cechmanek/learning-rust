@@ -41,10 +41,21 @@ impl ThreadPool {
 
 }
 
+impl Drop for ThreadPool {
+  fn drop(&mut self) {
+    for worker in &mut self.workers {
+      println!("Shutting down worker {}", worker.id);
+      if let Some(thread) = worker.thread.take() { // take() takes Some() variant and leaves None()
+        thread.join().unwrap();
+      }
+    }
+  }
+}
+
 // Worker is our light wrapper around a thread
 struct Worker {
   id: usize,
-  thread: thread::JoinHandle<()>,
+  thread: Option<thread::JoinHandle<()>>,
 }
 
 impl Worker {
@@ -59,7 +70,7 @@ impl Worker {
       job(); // run the code passed to this thread
     }); // spawn with empty code block. needed to keep alive
     
-    return Worker { id, thread };
+    return Worker { id:id, thread:Some(thread) };
   }
 }
 
