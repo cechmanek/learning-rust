@@ -14,7 +14,8 @@ fn main() {
  
   let pool = ThreadPool::new(4); // our custom ThreadPool struct. max of 4 threads
 
-  for stream in listener.incoming() {
+  //for stream in listener.incoming() { // continuously handle all page requests 
+  for stream in listener.incoming().take(2) { // only take two requests, then exit for-loop
     let stream = stream.unwrap();
 
     //handle_connection(stream); // for single threaded version
@@ -23,6 +24,8 @@ fn main() {
         handle_connection(stream);
     });
   }
+  println!("Shutting down server");
+  // after this is printed you'll see the cleanup messages for when threadpool drops out of scope
 }
 
 fn handle_connection(mut stream: TcpStream) {
