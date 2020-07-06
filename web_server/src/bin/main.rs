@@ -35,7 +35,7 @@ fn handle_connection(mut stream: TcpStream) {
   let get = b"GET / HTTP/1.1\r\n"; //'b' means interpret as bytes. GET request for '/' page
 
   let (status_line, file_name) = if buffer.starts_with(get) {
-      ("HTTP/1.1 200 OK\r\n\r\n{}", "hello.html") // must be implicit return
+      ("HTTP/1.1 200 OK\r\n\r\n", "hello.html") // must be implicit return
     }
     else {
       ("HTTP/1.1 404 NOT FOUND\r\n\r\n", "404.html")
