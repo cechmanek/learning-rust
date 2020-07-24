@@ -1,5 +1,5 @@
 [package]
-name = "chapter_2"
+name = "linked_lists"
 version = "0.1.0"
 authors = ["justin cechmanek <gj.cechmanek@gmail.com>"]
 edition = "2018"
